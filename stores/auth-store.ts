@@ -54,7 +54,9 @@ export const useAuthStore = create<AuthState>()(
 
           // Map common errors to translation keys
           if (error instanceof Error) {
-            if (error.message.includes('Invalid username or password') ||
+            if (error.message.includes('TOTP_REQUIRED') || error.message.includes('402')) {
+              errorKey = 'totp_required';
+            } else if (error.message.includes('Invalid username or password') ||
                 error.message.includes('401') ||
                 error.message.includes('Unauthorized')) {
               errorKey = 'invalid_credentials';

@@ -21,6 +21,7 @@ export default function LoginPage() {
   const [formData, setFormData] = useState({
     username: "",
     password: "",
+    totp: "",
   });
 
   const [savedUsernames, setSavedUsernames] = useState<string[]>([]);
@@ -193,10 +194,15 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // If a TOTP code is provided, append it to the password as 'secret$totp'
+    const passwordToSend = formData.totp && formData.totp.trim() !== ''
+      ? `${formData.password}$${formData.totp.trim()}`
+      : formData.password;
+
     const success = await login(
       serverUrl,
       formData.username,
-      formData.password
+      passwordToSend
     );
 
     if (success) {
@@ -288,6 +294,20 @@ export default function LoginPage() {
               required
               autoComplete="current-password"
             />
+
+            {/* TOTP input shown when server asks for it (or user can fill proactively) */}
+            {error === 'totp_required' && (
+              <Input
+                id="totp"
+                type="text"
+                value={formData.totp}
+                onChange={(e) => setFormData({ ...formData, totp: e.target.value })}
+                className="h-12 px-4 bg-secondary/50 border-border/50 focus:bg-secondary focus:border-primary/50 transition-colors"
+                placeholder={t("totp_placeholder") || 'TOTP code'}
+                required
+                autoComplete="one-time-code"
+              />
+            )}
           </div>
 
           <Button

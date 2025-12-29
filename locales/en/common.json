@@ -5,10 +5,12 @@
     "username_placeholder": "user@example.com",
     "password_label": "Password",
     "password_placeholder": "Enter your password",
+    "totp_placeholder": "TOTP code",
     "sign_in": "Sign in",
     "signing_in": "Signing in...",
     "error": {
       "invalid_credentials": "Invalid email or password",
+      "totp_required": "A TOTP code is required to authenticate this account",
       "connection_failed": "Failed to connect to the server",
       "generic": "An error occurred. Please try again."
     }

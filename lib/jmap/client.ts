@@ -93,10 +93,22 @@ export class JMAPClient {
       });
 
       if (!sessionResponse.ok) {
+        const responseText = await sessionResponse.text();
+        try {
+          const json = JSON.parse(responseText);
+          if (sessionResponse.status === 402 || json?.status === 402 || (json?.title && /totp/i.test(json.title))) {
+            const detail = json.detail || json.title || responseText;
+            throw new Error(`TOTP_REQUIRED: ${detail}`);
+          }
+        } catch (e) {
+          // ignore parse errors
+        }
+
         if (sessionResponse.status === 401) {
           throw new Error('Invalid username or password');
         }
-        throw new Error(`Failed to get session: ${sessionResponse.status}`);
+
+        throw new Error(`Failed to get session: ${sessionResponse.status} - ${responseText.substring(0,200)}`);
       }
 
       const session = await sessionResponse.json();
